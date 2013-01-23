@@ -1,0 +1,82 @@
+	.file	"main.c"
+	.text
+	.globl	test_check_goto
+	.type	test_check_goto, @function
+test_check_goto:
+.LFB43:
+	.cfi_startproc
+	movl	$-1, %eax
+	ret
+	.cfi_endproc
+.LFE43:
+	.size	test_check_goto, .-test_check_goto
+	.globl	check_funct
+	.type	check_funct, @function
+check_funct:
+.LFB44:
+	.cfi_startproc
+	movl	$-1, %eax
+	ret
+	.cfi_endproc
+.LFE44:
+	.size	check_funct, .-check_funct
+	.globl	test_check_function
+	.type	test_check_function, @function
+test_check_function:
+.LFB45:
+	.cfi_startproc
+	movl	$0, %eax
+	call	check_funct
+	rep
+	ret
+	.cfi_endproc
+.LFE45:
+	.size	test_check_function, .-test_check_function
+	.section	.rodata.str1.8,"aMS",@progbits,1
+	.align 8
+.LC0:
+	.string	"\telapsed wall clock time for goto: %ld\n"
+	.align 8
+.LC1:
+	.string	"\telapsed wall clock time for function: %ld\n"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB46:
+	.cfi_startproc
+	pushq	%rbx
+	.cfi_def_cfa_offset 16
+	.cfi_offset 3, -16
+	call	clock
+	movq	%rax, %rbx
+	movl	$100000000, %edx
+.L5:
+	subq	$1, %rdx
+	jne	.L5
+	call	clock
+	movq	%rax, %rsi
+	subq	%rbx, %rsi
+	movl	$.LC0, %edi
+	movl	$0, %eax
+	call	printf
+	call	clock
+	movq	%rax, %rbx
+	movl	$100000000, %edx
+.L6:
+	subq	$1, %rdx
+	jne	.L6
+	call	clock
+	movq	%rax, %rsi
+	subq	%rbx, %rsi
+	movl	$.LC1, %edi
+	movl	$0, %eax
+	call	printf
+	popq	%rbx
+	.cfi_def_cfa_offset 8
+	ret
+	.cfi_endproc
+.LFE46:
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu/Linaro 4.7.2-2ubuntu1) 4.7.2"
+	.section	.note.GNU-stack,"",@progbits

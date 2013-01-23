@@ -1,0 +1,141 @@
+	.file	"main.c"
+	.text
+	.globl	test_check_goto
+	.type	test_check_goto, @function
+test_check_goto:
+.LFB0:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movq	$0, -8(%rbp)
+	cmpq	$0, -8(%rbp)
+	je	.L2
+	movl	$1, %eax
+	jmp	.L3
+.L2:
+	movl	$-1, %eax
+.L3:
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	test_check_goto, .-test_check_goto
+	.globl	check_funct
+	.type	check_funct, @function
+check_funct:
+.LFB1:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movl	$-1, %eax
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE1:
+	.size	check_funct, .-check_funct
+	.globl	test_check_function
+	.type	test_check_function, @function
+test_check_function:
+.LFB2:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movq	$0, -16(%rbp)
+	movq	$check_funct, -8(%rbp)
+	movq	-8(%rbp), %rdx
+	movl	$0, %eax
+	call	*%rdx
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE2:
+	.size	test_check_function, .-test_check_function
+	.section	.rodata
+	.align 8
+.LC0:
+	.string	"\telapsed wall clock time for goto: %ld\n"
+	.align 8
+.LC1:
+	.string	"\telapsed wall clock time for function: %ld\n"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB3:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$48, %rsp
+	movl	%edi, -36(%rbp)
+	movq	%rsi, -48(%rbp)
+	movq	$0, -32(%rbp)
+	movq	$100000000, -24(%rbp)
+	call	clock
+	movq	%rax, -16(%rbp)
+	jmp	.L9
+.L10:
+	movl	$0, %eax
+	call	test_check_goto
+	addq	$1, -32(%rbp)
+.L9:
+	movq	-32(%rbp), %rax
+	cmpq	-24(%rbp), %rax
+	jl	.L10
+	call	clock
+	movq	%rax, -8(%rbp)
+	movq	-16(%rbp), %rax
+	movq	-8(%rbp), %rdx
+	movq	%rdx, %rcx
+	subq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%rax, %rsi
+	movl	$.LC0, %edi
+	movl	$0, %eax
+	call	printf
+	movq	$0, -32(%rbp)
+	call	clock
+	movq	%rax, -16(%rbp)
+	jmp	.L11
+.L12:
+	movl	$0, %eax
+	call	test_check_function
+	addq	$1, -32(%rbp)
+.L11:
+	movq	-32(%rbp), %rax
+	cmpq	-24(%rbp), %rax
+	jl	.L12
+	call	clock
+	movq	%rax, -8(%rbp)
+	movq	-16(%rbp), %rax
+	movq	-8(%rbp), %rdx
+	movq	%rdx, %rcx
+	subq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%rax, %rsi
+	movl	$.LC1, %edi
+	movl	$0, %eax
+	call	printf
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE3:
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu/Linaro 4.7.2-2ubuntu1) 4.7.2"
+	.section	.note.GNU-stack,"",@progbits
